@@ -35,43 +35,87 @@ Ao enviar, deve-se apresentar um alert javascript com sucesso, limpar todos os c
 do formulário e zerar a barra de progresso novamente.
 */
 
+import { useEffect, useState } from "react";
+
 function App() {
+  const [progress, setProgress] = useState(0);
+  const [name,setName]=useState('');
+  const [email,setEmail]=useState('');
+  const [civilStatus,setCivilStatus]=useState('');
+  const [sex,setSex]=useState('');
+  const [emailError,setEmailError]=useState(false);
+
+
+  useEffect(()=>{
+    const object={name,email,civilStatus,sex};
+    let newProgress=100;
+    Object.values(object).forEach((value)=>{
+      if(value==''){
+        newProgress-=25;
+      }
+    })
+    setProgress(newProgress);
+  },[name,email,civilStatus,sex])
+
+
+  const handleSubmit=(()=>{
+    if(!validateEmail(email)){
+      setEmailError(true);
+      return;
+    }
+    alert('Formulário enviado com sucesso');
+    setEmailError(false);
+    setName('');
+    setEmail('');
+    setCivilStatus('');
+    setSex('');
+    setProgress(0);
+  })
+
+  const validateEmail=(email)=>{
+    const regex= /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regex.test(email);
+  }
+
+
   return (
     <div className='App'>
       <h3>desafio fernandev</h3>
       <h1>progresso do formulário</h1>
-
       <main>
-        {/* crie a barra de progresso aqui */}
+        <div className="bar-container">
+          <div className='bar' style={{ width: `${progress}%` }}></div>
+          </div>
         <div className='form-group'>
-          <label htmlFor=''>Nome Completo</label>
-          <input />
+          <label htmlFor='name'>Nome Completo</label>
+          <input id="name" value={name} onChange={(e)=>setName(e.target.value)}/>
         </div>
         <div className='form-group'>
-          <label htmlFor=''>E-mail</label>
-          <input />
+          <label htmlFor='email'>E-mail</label>
+          <input id="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+          {emailError && <span style={{color:"#F00"}}>Email inválido</span>}
         </div>
         <div className='form-group'>
           <label htmlFor=''>Estado Civil</label>
-          <select>
-            <option value=''>- selecione...</option>
-            <option value='solteiro'>Solteiro</option>
-            <option value='casado'>Casado</option>
-            <option value='divorciado'>Divorciado</option>
+          <select onChange={(e)=>setCivilStatus(e.target.value)} >
+            <option value='' disabled selected={civilStatus===""}>- selecione...</option>
+            <option value='solteiro' selected={civilStatus==="solteiro"}>Solteiro</option>
+            <option value='casado' selected={civilStatus==="casado"}>Casado</option>
+            <option value='divorciado' selected={civilStatus==="divorciado"}>Divorciado</option>
           </select>
         </div>
         <div className='form-group'>
           <label htmlFor=''>Gênero</label>
           <div className='radios-container'>
             <span>
-              <input type='radio' /> Masculino
+              <input type='radio' value="masculino" checked={sex=="masculino"}  onChange={(e)=>setSex(e.target.value)}/> Masculino
             </span>
             <span>
-              <input type='radio' /> Feminino
+              <input type='radio' value="feminino" checked={sex=="feminino"} onChange={(e)=>setSex(e.target.value)}/> Feminino
             </span>
           </div>
         </div>
-        <button>Enviar Formulário</button>
+        <button onClick={handleSubmit} disabled={!name || !email || !civilStatus || !sex}>Enviar Formulário</button>
       </main>
     </div>
   );

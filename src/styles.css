@@ -68,6 +68,7 @@ button {
   background: #535bf2;
   width: 100px;
   height: 100%;
+  transition: width 0.5s ease-out;
 }
 label {
   margin-bottom: 5px;
@@ -121,3 +122,6 @@ button:disabled:hover {
 .radios-container span {
   margin-right: 15px;
 }
+
+
+
